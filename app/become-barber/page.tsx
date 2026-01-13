@@ -15,7 +15,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { barberProfileSchema, type BarberProfileInput } from '@/lib/validations/barber'
 import { Button } from '@/components/ui/button'
@@ -158,42 +158,44 @@ export default function BecomeBarberPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            {/* Error message */}
-            {error && (
-              <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
-            {/* Step Content */}
-            {currentStep === 1 && <BasicInfoStep form={form} />}
-            {currentStep === 2 && <LocationStep form={form} />}
-            {currentStep === 3 && <SpecialtiesStep form={form} />}
-            {currentStep === 4 && <ReviewStep form={form} />}
-
-            {/* Navigation Buttons */}
-            <div className="mt-6 flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={previousStep}
-                disabled={currentStep === 1}
-              >
-                Previous
-              </Button>
-
-              {currentStep < STEPS.length ? (
-                <Button type="button" onClick={nextStep}>
-                  Next
-                </Button>
-              ) : (
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Submitting...' : 'Submit Profile'}
-                </Button>
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              {/* Error message */}
+              {error && (
+                <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                  {error}
+                </div>
               )}
-            </div>
-          </form>
+
+              {/* Step Content */}
+              {currentStep === 1 && <BasicInfoStep form={form} />}
+              {currentStep === 2 && <LocationStep form={form} />}
+              {currentStep === 3 && <SpecialtiesStep form={form} />}
+              {currentStep === 4 && <ReviewStep form={form} />}
+
+              {/* Navigation Buttons */}
+              <div className="mt-6 flex justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={previousStep}
+                  disabled={currentStep === 1}
+                >
+                  Previous
+                </Button>
+
+                {currentStep < STEPS.length ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Submit Profile'}
+                  </Button>
+                )}
+              </div>
+            </form>
+          </FormProvider>
         </CardContent>
       </Card>
     </div>
