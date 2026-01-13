@@ -12,7 +12,7 @@ import { z } from 'zod'
  *
  * Rules enforced:
  * - Bio must be 50-150 characters (not too short, not too long)
- * - Price must be between $10-30 (affordable for students)
+ * - Price must be at least $10 (no maximum for premium services)
  * - Years experience must be positive
  * - At least one specialty required
  * - Location details required based on type
@@ -30,7 +30,7 @@ export const barberProfileSchema = z.object({
   base_price: z
     .number()
     .min(10, 'Price must be at least $10')
-    .max(30, 'Price must be no more than $30'),
+    .max(500, 'Price must be no more than $500'),
   location_type: z.enum(['fixed', 'mobile']),
   location_area: z.string().optional(),
   exact_address: z.string().optional(),

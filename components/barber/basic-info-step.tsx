@@ -82,14 +82,14 @@ export function BasicInfoStep({ form }: BasicInfoStepProps) {
               <Input
                 type="number"
                 min="10"
-                max="30"
+                max="500"
                 step="0.01"
                 {...field}
                 onChange={(e) => field.onChange(parseFloat(e.target.value) || 20)}
               />
             </FormControl>
             <FormDescription>
-              Your standard haircut price ($10-30 for student affordability)
+              Your standard haircut price (minimum $10, premium services welcome)
             </FormDescription>
             <FormMessage />
           </FormItem>
