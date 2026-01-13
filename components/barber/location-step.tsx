@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/form'
 
 interface LocationStepProps {
-  form: UseFormReturn<BarberProfileInput>
+  form: UseFormReturn<any>
 }
 
 export function LocationStep({ form }: LocationStepProps) {

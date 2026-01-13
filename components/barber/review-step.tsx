@@ -11,7 +11,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { BarberProfileInput } from '@/lib/validations/barber'
 
 interface ReviewStepProps {
-  form: UseFormReturn<BarberProfileInput>
+  form: UseFormReturn<any>
 }
 
 export function ReviewStep({ form }: ReviewStepProps) {
@@ -71,7 +71,7 @@ export function ReviewStep({ form }: ReviewStepProps) {
       <div className="rounded-lg border p-4 space-y-2">
         <h3 className="font-semibold">Specialties</h3>
         <div className="flex flex-wrap gap-2">
-          {values.specialties?.map((specialty) => (
+          {values.specialties?.map((specialty: string) => (
             <span
               key={specialty}
               className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"

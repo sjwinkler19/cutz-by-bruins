@@ -41,21 +41,21 @@ export default function BecomeBarberPage() {
   const [error, setError] = useState<string | null>(null)
 
   // Initialize form
-  const form = useForm<BarberProfileInput>({
+  const form = useForm({
     resolver: zodResolver(barberProfileSchema),
     defaultValues: {
       bio: '',
       years_experience: 0,
       base_price: 20,
-      location_type: 'fixed',
+      location_type: 'fixed' as const,
       location_area: '',
       exact_address: '',
       service_radius_miles: undefined,
       venmo_handle: '',
       zelle_handle: '',
       instagram_handle: '',
-      appointment_duration: 45,
-      specialties: [],
+      appointment_duration: '45' as const,
+      specialties: [] as const,
     },
   })
 

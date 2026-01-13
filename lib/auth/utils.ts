@@ -94,6 +94,8 @@ export async function requireAuth(): Promise<User> {
     // WHY: Using Next.js redirect() to handle navigation
     const { redirect } = await import('next/navigation')
     redirect('/login')
+    // TypeScript doesn't know redirect() never returns, so we add this to satisfy the compiler
+    throw new Error('Redirecting')
   }
 
   return user
@@ -115,6 +117,7 @@ export async function requireBarber(): Promise<User> {
   if (user.role !== 'barber') {
     const { redirect } = await import('next/navigation')
     redirect('/dashboard')
+    throw new Error('Redirecting')
   }
 
   return user

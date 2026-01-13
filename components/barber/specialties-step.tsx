@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/form'
 
 interface SpecialtiesStepProps {
-  form: UseFormReturn<BarberProfileInput>
+  form: UseFormReturn<any>
 }
 
 const SPECIALTIES = [
@@ -64,7 +64,7 @@ export function SpecialtiesStep({ form }: SpecialtiesStepProps) {
                         field.onChange([...currentSpecialties, specialty.value])
                       } else {
                         field.onChange(
-                          currentSpecialties.filter((s) => s !== specialty.value)
+                          currentSpecialties.filter((s: string) => s !== specialty.value)
                         )
                       }
                     }}

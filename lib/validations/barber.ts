@@ -38,7 +38,7 @@ export const barberProfileSchema = z.object({
   venmo_handle: z.string().optional(),
   zelle_handle: z.string().optional(),
   instagram_handle: z.string().optional(),
-  appointment_duration: z.enum([30, 45, 60]).transform(Number),
+  appointment_duration: z.enum(['30', '45', '60']).transform(Number),
   specialties: z
     .array(
       z.enum([

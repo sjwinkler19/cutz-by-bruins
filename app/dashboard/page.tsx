@@ -9,6 +9,7 @@
  */
 
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { getCurrentUser } from '@/lib/auth/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { BookingsList } from '@/components/bookings/bookings-list'
 
 export default async function DashboardPage() {
   // Get current user (server-side)
@@ -39,7 +41,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 mb-8">
         {/* User Info Card */}
         <Card>
           <CardHeader>
@@ -79,33 +81,53 @@ export default async function DashboardPage() {
           <CardContent className="space-y-3">
             {user.role === 'customer' && (
               <>
-                <Button className="w-full" variant="default">
-                  Find a Barber
-                </Button>
-                <Button className="w-full" variant="outline">
-                  View My Bookings
-                </Button>
-                <Button className="w-full" variant="outline">
-                  Become a Barber
-                </Button>
+                <Link href="/barbers" className="block">
+                  <Button className="w-full" variant="default">
+                    Find a Barber
+                  </Button>
+                </Link>
+                <Link href="/become-barber" className="block">
+                  <Button className="w-full" variant="outline">
+                    Become a Barber
+                  </Button>
+                </Link>
               </>
             )}
             {user.role === 'barber' && (
               <>
-                <Button className="w-full" variant="default">
-                  View Appointments
-                </Button>
-                <Button className="w-full" variant="outline">
-                  Manage Profile
-                </Button>
-                <Button className="w-full" variant="outline">
-                  Update Availability
-                </Button>
+                <Link href="/barber/appointments" className="block">
+                  <Button className="w-full" variant="default">
+                    View Appointments
+                  </Button>
+                </Link>
+                <Link href="/barber/profile" className="block">
+                  <Button className="w-full" variant="outline">
+                    Manage Profile
+                  </Button>
+                </Link>
+                <Link href="/barber/availability" className="block">
+                  <Button className="w-full" variant="outline">
+                    Update Availability
+                  </Button>
+                </Link>
               </>
             )}
           </CardContent>
         </Card>
       </div>
+
+      {/* Bookings Section - Only for customers */}
+      {user.role === 'customer' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>My Bookings</CardTitle>
+            <CardDescription>View and manage your appointments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <BookingsList />
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

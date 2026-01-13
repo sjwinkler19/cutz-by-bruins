@@ -12,6 +12,11 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/utils'
 import { createBookingSchema } from '@/lib/validations/booking'
 import { z } from 'zod'
+import { sendEmail } from '@/lib/email/service'
+import {
+  bookingConfirmationEmail,
+  newBookingNotificationEmail,
+} from '@/lib/email/templates'
 
 /**
  * GET - Fetch current user's bookings
@@ -215,6 +220,59 @@ export async function POST(request: NextRequest) {
 
     if (bookingError) throw bookingError
 
+    // Step 6: Send email notifications
+    try {
+      // Get full barber details with user info
+      const { data: barberWithUser } = await supabase
+        .from('barber_profiles')
+        .select('*, user:users!barber_profiles_user_id_fkey(*)')
+        .eq('id', validatedData.barber_id)
+        .single()
+
+      if (barberWithUser) {
+        // Send confirmation email to customer
+        await sendEmail(
+          user.email,
+          'Booking Confirmed - Cutz by Bruins',
+          bookingConfirmationEmail({
+            customerName: `${user.first_name} ${user.last_name}`,
+            barberName: `${barberWithUser.user.first_name} ${barberWithUser.user.last_name}`,
+            bookingDate: validatedData.appointment_date,
+            startTime: validatedData.appointment_time,
+            endTime: calculateEndTime(
+              validatedData.appointment_time,
+              barber.appointment_duration
+            ),
+            price: barber.base_price,
+            bookingId: booking.id,
+          })
+        )
+
+        // Send notification email to barber
+        await sendEmail(
+          barberWithUser.user.email,
+          'New Booking Request - Cutz by Bruins',
+          newBookingNotificationEmail({
+            barberName: `${barberWithUser.user.first_name} ${barberWithUser.user.last_name}`,
+            customerName: `${user.first_name} ${user.last_name}`,
+            customerEmail: user.email,
+            customerPhone: user.phone,
+            bookingDate: validatedData.appointment_date,
+            startTime: validatedData.appointment_time,
+            endTime: calculateEndTime(
+              validatedData.appointment_time,
+              barber.appointment_duration
+            ),
+            price: barber.base_price,
+            bookingId: booking.id,
+          })
+        )
+      }
+    } catch (emailError) {
+      // Don't fail the booking if email fails
+      console.error('Failed to send booking emails:', emailError)
+    }
+
     return NextResponse.json({
       success: true,
       booking,
@@ -223,7 +281,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors[0].message },
+        { error: error.issues[0].message },
         { status: 400 }
       )
     }
@@ -242,4 +300,15 @@ export async function POST(request: NextRequest) {
 function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number)
   return hours * 60 + minutes
+}
+
+/**
+ * Helper function to calculate end time
+ */
+function calculateEndTime(startTime: string, durationMinutes: number): string {
+  const startMinutes = timeToMinutes(startTime)
+  const endMinutes = startMinutes + durationMinutes
+  const hours = Math.floor(endMinutes / 60)
+  const minutes = endMinutes % 60
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
