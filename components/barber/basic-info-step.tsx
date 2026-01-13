@@ -81,7 +81,7 @@ export function BasicInfoStep({ form }: BasicInfoStepProps) {
             <FormControl>
               <Input
                 type="number"
-                min="10"
+                min="0"
                 max="500"
                 step="0.01"
                 {...field}
@@ -89,7 +89,7 @@ export function BasicInfoStep({ form }: BasicInfoStepProps) {
               />
             </FormControl>
             <FormDescription>
-              Your standard haircut price (minimum $10, premium services welcome)
+              Your standard haircut price (free to $500, you decide)
             </FormDescription>
             <FormMessage />
           </FormItem>

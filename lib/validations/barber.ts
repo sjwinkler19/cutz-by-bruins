@@ -29,7 +29,7 @@ export const barberProfileSchema = z.object({
     .max(50, 'Years of experience seems too high'),
   base_price: z
     .number()
-    .min(10, 'Price must be at least $10')
+    .min(0, 'Price must be at least $0')
     .max(500, 'Price must be no more than $500'),
   location_type: z.enum(['fixed', 'mobile']),
   location_area: z.string().optional(),
