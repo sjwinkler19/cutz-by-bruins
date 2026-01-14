@@ -12,7 +12,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { Button } from '@/components/ui/button'
@@ -101,6 +101,7 @@ function LoginPageContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Success message */}
             {successMessage && (
@@ -159,6 +160,7 @@ function LoginPageContent() {
               {isLoading ? 'Logging in...' : 'Log In'}
             </Button>
           </form>
+          </FormProvider>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
