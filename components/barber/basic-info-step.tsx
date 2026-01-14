@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 
 interface BasicInfoStepProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>
 }
 

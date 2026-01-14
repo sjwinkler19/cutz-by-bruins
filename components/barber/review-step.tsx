@@ -8,9 +8,9 @@
 'use client'
 
 import { UseFormReturn } from 'react-hook-form'
-import { BarberProfileInput } from '@/lib/validations/barber'
 
 interface ReviewStepProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>
 }
 

@@ -8,7 +8,6 @@
 'use client'
 
 import { UseFormReturn } from 'react-hook-form'
-import { BarberProfileInput } from '@/lib/validations/barber'
 import { Input } from '@/components/ui/input'
 import {
   FormField,
@@ -20,6 +19,7 @@ import {
 } from '@/components/ui/form'
 
 interface SpecialtiesStepProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>
 }
 
