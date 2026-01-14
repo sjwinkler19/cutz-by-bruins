@@ -12,8 +12,18 @@
 
 import { Resend } from 'resend'
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy-initialize Resend to avoid build-time errors when API key not available
+let resend: Resend | null = null
+
+function getResendClient(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    return null
+  }
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 /**
  * Send an email
@@ -25,13 +35,15 @@ const resend = new Resend(process.env.RESEND_API_KEY)
  */
 export async function sendEmail(to: string, subject: string, html: string) {
   try {
+    const client = getResendClient()
+
     // Skip if no API key configured
-    if (!process.env.RESEND_API_KEY) {
+    if (!client) {
       console.warn('Resend API key not configured - email not sent')
       return null
     }
 
-    const data = await resend.emails.send({
+    const data = await client.emails.send({
       from: process.env.FROM_EMAIL || 'noreply@cutzbybruins.com',
       to,
       subject,
