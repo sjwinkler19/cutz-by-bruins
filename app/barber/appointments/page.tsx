@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { BookingStatus } from '@/lib/validations/booking'
 
 interface Booking {
   id: string
@@ -19,7 +20,7 @@ interface Booking {
   start_time: string
   end_time: string
   total_price: number
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  status: BookingStatus
   customer: {
     full_name: string
     email: string
@@ -78,7 +79,7 @@ export default function BarberAppointmentsPage() {
       // Update local state
       setBookings((prev) =>
         prev.map((booking) =>
-          booking.id === bookingId ? { ...booking, status: newStatus as any } : booking
+          booking.id === bookingId ? { ...booking, status: newStatus as BookingStatus } : booking
         )
       )
     } catch (err) {
