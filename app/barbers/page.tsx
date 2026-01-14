@@ -27,6 +27,8 @@ const SPECIALTIES = [
   { value: 'buzz_cuts', label: 'Buzz Cuts' },
 ]
 
+type LocationFilter = 'all' | 'fixed' | 'mobile'
+
 interface Barber {
   id: string
   user: {
@@ -54,8 +56,8 @@ function BarbersPageContent() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
   const [minPrice, setMinPrice] = useState(searchParams.get('min_price') || '')
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') || '')
-  const [locationType, setLocationType] = useState<'all' | 'fixed' | 'mobile'>(
-    (searchParams.get('location_type') as any) || 'all'
+  const [locationType, setLocationType] = useState<LocationFilter>(
+    (searchParams.get('location_type') as LocationFilter) || 'all'
   )
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>(
     searchParams.get('specialties')?.split(',').filter(Boolean) || []
@@ -189,7 +191,7 @@ function BarbersPageContent() {
                         name="location_type"
                         value="all"
                         checked={locationType === 'all'}
-                        onChange={(e) => setLocationType(e.target.value as any)}
+                        onChange={(e) => setLocationType(e.target.value as LocationFilter)}
                         className="mr-2"
                       />
                       All
@@ -200,7 +202,7 @@ function BarbersPageContent() {
                         name="location_type"
                         value="fixed"
                         checked={locationType === 'fixed'}
-                        onChange={(e) => setLocationType(e.target.value as any)}
+                        onChange={(e) => setLocationType(e.target.value as LocationFilter)}
                         className="mr-2"
                       />
                       Fixed Location
@@ -211,7 +213,7 @@ function BarbersPageContent() {
                         name="location_type"
                         value="mobile"
                         checked={locationType === 'mobile'}
-                        onChange={(e) => setLocationType(e.target.value as any)}
+                        onChange={(e) => setLocationType(e.target.value as LocationFilter)}
                         className="mr-2"
                       />
                       Mobile Service
