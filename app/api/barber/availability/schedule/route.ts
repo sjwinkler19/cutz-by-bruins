@@ -14,12 +14,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/utils'
 import { z } from 'zod'
+import { timeSchema } from '@/lib/validations/common'
+import { validationErrorResponse } from '@/lib/api/errors'
 
 // Validation schema for adding schedule
 const addScheduleSchema = z.object({
   day_of_week: z.number().int().min(0).max(6, 'Day must be 0-6 (Sun-Sat)'),
-  start_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:MM)'),
-  end_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:MM)'),
+  start_time: timeSchema,
+  end_time: timeSchema,
 }).refine(
   (data) => data.start_time < data.end_time,
   {
@@ -156,10 +158,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.issues[0].message },
-        { status: 400 }
-      )
+      return validationErrorResponse(error)
     }
 
     console.error('Add schedule error:', error)
@@ -224,10 +223,7 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.issues[0].message },
-        { status: 400 }
-      )
+      return validationErrorResponse(error)
     }
 
     console.error('Delete schedule error:', error)
