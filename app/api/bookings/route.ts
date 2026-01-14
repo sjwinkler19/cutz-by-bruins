@@ -17,6 +17,8 @@ import {
   bookingConfirmationEmail,
   newBookingNotificationEmail,
 } from '@/lib/email/templates'
+import { timeToMinutes, calculateEndTime } from '@/lib/utils/time'
+import { validationErrorResponse } from '@/lib/api/errors'
 
 /**
  * GET - Fetch current user's bookings
@@ -218,7 +220,16 @@ export async function POST(request: NextRequest) {
       `)
       .single()
 
-    if (bookingError) throw bookingError
+    if (bookingError) {
+      // Check for unique constraint violation (double-booking attempt)
+      if (bookingError.code === '23505') {
+        return NextResponse.json(
+          { error: 'This time slot was just booked by someone else. Please choose another time.' },
+          { status: 409 }
+        )
+      }
+      throw bookingError
+    }
 
     // Step 6: Send email notifications
     try {
@@ -280,10 +291,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.issues[0].message },
-        { status: 400 }
-      )
+      return validationErrorResponse(error)
     }
 
     console.error('Create booking error:', error)
@@ -292,23 +300,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-/**
- * Helper function to convert time string to minutes
- */
-function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(':').map(Number)
-  return hours * 60 + minutes
-}
-
-/**
- * Helper function to calculate end time
- */
-function calculateEndTime(startTime: string, durationMinutes: number): string {
-  const startMinutes = timeToMinutes(startTime)
-  const endMinutes = startMinutes + durationMinutes
-  const hours = Math.floor(endMinutes / 60)
-  const minutes = endMinutes % 60
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
