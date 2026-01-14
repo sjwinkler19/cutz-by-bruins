@@ -15,45 +15,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-
-/**
- * Helper function to convert time string to minutes since midnight
- * @example "09:30" -> 570 (9*60 + 30)
- */
-function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(':').map(Number)
-  return hours * 60 + minutes
-}
-
-/**
- * Helper function to convert minutes since midnight to time string
- * @example 570 -> "09:30"
- */
-function minutesToTime(minutes: number): string {
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
-}
-
-/**
- * Generate all possible time slots within a time range
- */
-function generateSlots(
-  startTime: string,
-  endTime: string,
-  durationMinutes: number
-): string[] {
-  const slots: string[] = []
-  const startMinutes = timeToMinutes(startTime)
-  const endMinutes = timeToMinutes(endTime)
-
-  // Generate slots from start to end, stepping by duration
-  for (let time = startMinutes; time + durationMinutes <= endMinutes; time += durationMinutes) {
-    slots.push(minutesToTime(time))
-  }
-
-  return slots
-}
+import { timeToMinutes, generateTimeSlots } from '@/lib/utils/time'
+import { DATE_REGEX } from '@/lib/validations/common'
 
 export async function GET(
   request: NextRequest,
@@ -73,8 +36,7 @@ export async function GET(
     }
 
     // Validate date format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-    if (!dateRegex.test(dateParam)) {
+    if (!DATE_REGEX.test(dateParam)) {
       return NextResponse.json(
         { error: 'Invalid date format. Use YYYY-MM-DD' },
         { status: 400 }
@@ -166,7 +128,7 @@ export async function GET(
     // Step 4: Generate all possible slots from available hours
     let allSlots: string[] = []
     for (const hours of availableHours) {
-      const slots = generateSlots(
+      const slots = generateTimeSlots(
         hours.start_time,
         hours.end_time,
         appointmentDuration
